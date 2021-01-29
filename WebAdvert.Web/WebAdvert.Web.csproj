@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>c1701fc5-3809-49ae-b8aa-2ea6c813563d</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Amazon.AspNetCore.Identity.Cognito" Version="2.0.2" />
+    <PackageReference Include="Amazon.Extensions.CognitoAuthentication" Version="2.0.3" />
+  </ItemGroup>
+
+</Project>
