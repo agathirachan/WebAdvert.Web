@@ -8,11 +8,15 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Polly;
+using Polly.Extensions.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
+using WebAdvert.Web.ServiceClient;
 using WebAdvert.Web.Services;
 
 namespace WebAdvert.Web
@@ -53,7 +57,14 @@ namespace WebAdvert.Web
             });
 
             services.AddTransient<IFileUploader, S3FileUploader>();
-
+            //Page Microsoft.Extensions.Http
+            //HttpClient as a Dependency Injection
+            //Automatically cretes HttpClient in DI no need to create it
+            //Microsoft.Extensions.Http.Polly for Circuit Breaker Pattern
+            services.AddHttpClient<IAdvertApiClient, AdvertApiClient>()
+                        .AddPolicyHandler(GetRetryPolicy())
+                            .AddPolicyHandler(GetCircuitBreakerPatternPolicy());
+           
             services.AddControllersWithViews();
             // For Linux Hosting
             //services.Configure<ForwardedHeadersOptions>(options =>
@@ -72,6 +83,9 @@ namespace WebAdvert.Web
             //});
         }
 
+      
+
+        
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         { 
@@ -107,6 +121,20 @@ namespace WebAdvert.Web
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+
+        private IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        {
+            return HttpPolicyExtensions.HandleTransientHttpError()
+                                            .OrResult(status => status.StatusCode == HttpStatusCode.NotFound)
+                                                 .WaitAndRetryAsync(retryCount: 5, sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+        }
+
+        private IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPatternPolicy()
+        {
+            return HttpPolicyExtensions.HandleTransientHttpError()
+                                            .CircuitBreakerAsync(3, TimeSpan.FromSeconds(30));
         }
     }
 }
