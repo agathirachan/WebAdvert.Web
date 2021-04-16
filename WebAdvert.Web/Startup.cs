@@ -64,7 +64,10 @@ namespace WebAdvert.Web
             services.AddHttpClient<IAdvertApiClient, AdvertApiClient>()
                         .AddPolicyHandler(GetRetryPolicy())
                             .AddPolicyHandler(GetCircuitBreakerPatternPolicy());
-           
+
+            services.AddHttpClient<ISearchApiClient, SearchApiClient>().AddPolicyHandler(GetRetryPolicy())
+                .AddPolicyHandler(GetCircuitBreakerPatternPolicy());
+
             services.AddControllersWithViews();
             // For Linux Hosting
             //services.Configure<ForwardedHeadersOptions>(options =>
