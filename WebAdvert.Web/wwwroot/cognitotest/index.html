@@ -1,0 +1,120 @@
+<html>
+
+<head>
+    <script type="text/javascript" src="amazon-cognito-auth.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script>
+        var id_token = null;
+
+        function InitCognitoSdk() {
+
+            var authData = {
+                ClientId: '', // Your client id here
+                AppWebDomain: '', // Exclude the "https://" part.
+                TokenScopesArray: ['openid', 'profile'], // like ['openid','email','phone']...
+                RedirectUriSignIn: 'https://localhost:44376/cognitotest/index.html',
+                RedirectUriSignOut: 'https://localhost:44376/cognitotest/index.html',
+                IdentityProvider: 'Cognito User Pool',
+                UserPoolId: '', //your user pool id
+                AdvancedSecurityDataCollectionFlag: false
+            }
+
+            var CognitoAuth = new AmazonCognitoIdentity.CognitoAuth(authData);
+
+            CognitoAuth.userhandler = {
+                onSuccess: function (result) {
+                    alert("Sign in success");
+                    id_token = result.getIdToken().getJwtToken();
+                    calltoApi(id_token);
+                },
+                onFailure: function (err) {
+                    alert("Error!" + err);
+                }
+            };
+
+            return CognitoAuth;
+        }
+
+        function login() {
+            var auth = InitCognitoSdk();
+            auth.getSession();
+        }
+
+        function onLoad() {
+
+            alert('page loading...');
+            var auth = InitCognitoSdk();
+            var curUrl = window.location.href;
+            if (curUrl != null) {
+                auth.parseCognitoWebResponse(curUrl);
+            }
+        }
+
+        function calltoApi(token) {
+            $.ajax({
+                url: "test.html",
+                context: document.body
+            })
+            .done(function () {
+                $(this).addClass("done");
+            })
+            .error(function (error) {
+
+            });
+
+            $.ajax({
+
+                type: "GET",
+                url:"https://localhost:44378/WeatherForecast",
+              //  url: "https://pfrvspj1a7.execute-api.us-east-1.amazonaws.com/prod/all",  //put your api url here
+                //headers: {
+                //    'Access-Control-Allow-Origin': '*', "Access-Control-Allow-Methods": "DELETE,GET,HEAD,OPTIONS,PATCH,POST PUT", "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token"
+                //},
+                //headers: {
+                //    'origin': 'https://localhost:44376', 'Access-Control-Allow-Origin': 'https://localhost:44376'
+                //},
+                //headers: {
+                //    'Content-Type': 'application/x-www-form-urlencoded'
+                //},
+                //headers: {
+                // "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token"
+                //},
+                //headers: {
+                //    'Access-Control-Allow-Origin': 'https://localhost:44376/'
+                //},
+                crossDomain:true,
+                //beforeSend: function (xhr) { xhr.setRequestHeader('Authorization', id_token); },
+                //beforeSend: function (xhr) { xhr.setRequestHeader('Authorization', "Bearer "+id_token); },
+                 headers: {
+                     'Authorization': "Bearer " + id_token
+                },
+                success: function (result) {
+
+                    $.each(result, function (index, value) {
+                        $("#result").append(value.title + " </br>");
+                    });
+
+                },
+                error: function (result) {
+                    //handle the error 
+                }
+            })
+        }
+    </script>
+</head>
+
+<body onload="onLoad()">
+
+    <h1>
+        Click on the button below to make a call to /adverts/v1/all
+    </h1>
+
+    <button onclick="login()">Login with Cognito</button>
+
+    <p id="result">
+
+    </p>
+</body>
+
+</html>

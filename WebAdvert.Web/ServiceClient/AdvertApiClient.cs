@@ -1,4 +1,6 @@
 ﻿using AdvertApi.Models;
+using Amazon.ServiceDiscovery;
+using Amazon.ServiceDiscovery.Model;
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -20,9 +22,15 @@ namespace WebAdvert.Web.ServiceClient
         {
             this._configuration = configuration;
             this._httpClient = httpClient;
+            //Service Discovery Start
+            //DiscoverService();
+            //Service Discovery End
+
+
             var baseURL = _configuration.GetSection(key: "AdvertApi").GetValue<string>(key: "BaseUrl");
             _httpClient.BaseAddress = new Uri(baseURL);
-            _httpClient.DefaultRequestHeaders.Add(name: "Content-type", value: "application/json");
+            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-type", "aapplication/json");
+            //Accept( new HttpRequestMessage() { d}  name: "Content-type", value: "application/json");
             _baseAddress = configuration.GetSection("AdvertApi").GetValue<string>("BaseUrl");
         }
 
@@ -68,6 +76,20 @@ namespace WebAdvert.Web.ServiceClient
             return JsonConvert.DeserializeObject<Advertisement>(allAdvertModel);
             //var fullAdvert = await apiCallResponse.Content.ReadAsAsync<AdvertModel>().ConfigureAwait(false);
             //return _mapper.Map<Advertisement>(fullAdvert);
+        }
+
+        private void DiscoverService()
+        {
+            //This gives the IPV4 address and port number of the service
+           var discoveryClient = new AmazonServiceDiscoveryClient();
+           var discoveryTask = discoveryClient.DiscoverInstancesAsync(new DiscoverInstancesRequest() { 
+            ServiceName ="advertapi",
+            NamespaceName = "WebAdvertisement"
+            });
+            discoveryTask.Wait();
+           var instances =  discoveryTask.Result.Instances; //randomize
+            var ipv4 = instances[0].Attributes["AWS_INSTANCE_IPV4"];
+            var port = instances[0].Attributes["AWS_INSTANCE_PORT"];
         }
     }
 }

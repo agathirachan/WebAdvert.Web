@@ -18,6 +18,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using WebAdvert.Web.ServiceClient;
 using WebAdvert.Web.Services;
+using AutoMapper;
 
 namespace WebAdvert.Web
 {
@@ -51,11 +52,15 @@ namespace WebAdvert.Web
                     RequireUppercase = false
                 };
             });
+
+            services.AddScoped<AmazonCognitoIdentityProviderClient>();
+
             services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/Accounts/Login";
             });
-
+            services.AddAutoMapper((x)=> { 
+            });
             services.AddTransient<IFileUploader, S3FileUploader>();
             //Page Microsoft.Extensions.Http
             //HttpClient as a Dependency Injection
