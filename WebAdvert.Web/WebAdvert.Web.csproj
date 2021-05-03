@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>c1701fc5-3809-49ae-b8aa-2ea6c813563d</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>.</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +15,7 @@
     <PackageReference Include="AWSSDK.ServiceDiscovery" Version="3.7.0.13" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0-preview.3.21201.4" />
     <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="6.0.0-preview.3.21201.13" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.0-preview.3.21209.2" />
   </ItemGroup>
 
