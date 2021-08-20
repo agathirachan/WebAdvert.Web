@@ -18,6 +18,17 @@ namespace WebAdvert.Web
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                //To read configuration from parameter store for docker
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    var envName = hostingContext.HostingEnvironment.EnvironmentName.ToString().ToLower();
+                    config.AddSystemsManager($"/dockerwa");
+                })
+                //.ConfigureAppConfiguration((hostingContext, config) =>
+                //{
+                //    var envName = hostingContext.HostingEnvironment.EnvironmentName.ToString().ToLower();
+                //    config.AddSystemsManager($"/{envName}", TimeSpan.FromMinutes(5));
+                //})
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

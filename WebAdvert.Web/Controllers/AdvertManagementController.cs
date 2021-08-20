@@ -27,9 +27,11 @@ namespace WebAdvert.Web.Controllers
             this._advertApiClient = advertApiClient;
             this._mapper = mapper;
         }
+
         [HttpGet]
-        public IActionResult Create(CreateAdvertViewModel model)
+        public IActionResult Create()
         {
+            CreateAdvertViewModel model = new CreateAdvertViewModel();
             return View(model);
         }
 
@@ -70,7 +72,7 @@ namespace WebAdvert.Web.Controllers
                         {
                             throw new Exception(message: $"Cannot confirm advert of id = {id}");
                         }
-                        return RedirectToAction("Inxex", controllerName: "Home");
+                        return RedirectToAction("Index", controllerName: "Home");
                     }
                     catch(Exception ex)
                     {
