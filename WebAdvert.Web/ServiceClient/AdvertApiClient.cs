@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using WebAdvert.Web.Models.AdvertManagement;
 
@@ -29,15 +30,15 @@ namespace WebAdvert.Web.ServiceClient
 
             var baseURL = _configuration.GetSection(key: "AdvertApi").GetValue<string>(key: "BaseUrl");
             _httpClient.BaseAddress = new Uri(baseURL);
-            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-type", "aapplication/json");
-            //Accept( new HttpRequestMessage() { d}  name: "Content-type", value: "application/json");
+            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
+            //Accept(new HttpRequestMessage() { d }  name: "Content-type", value: "application/json");
             _baseAddress = configuration.GetSection("AdvertApi").GetValue<string>("BaseUrl");
         }
 
         public async Task<bool> Confirm(ConfimAdvertModel model)
         {
              var jsonModel = JsonConvert.SerializeObject(model);
-            var response = await _httpClient.PutAsync(requestUri:new Uri(uriString:$"{_httpClient.BaseAddress}/confirm"), content: new StringContent(jsonModel))
+            var response = await _httpClient.PutAsync(requestUri:new Uri(uriString:$"{_httpClient.BaseAddress}/confirm"), content: new StringContent(jsonModel, Encoding.UTF8, "application/json"))
                                                       .ConfigureAwait(continueOnCapturedContext: false);
             return response.StatusCode == System.Net.HttpStatusCode.OK;
         }
@@ -46,7 +47,7 @@ namespace WebAdvert.Web.ServiceClient
         {
 
             var jsonModel = JsonConvert.SerializeObject(model);
-            var response = await _httpClient.PostAsync(requestUri:new Uri(uriString: $"{_httpClient.BaseAddress}/create"), content: new StringContent(jsonModel))
+            var response = await _httpClient.PostAsync(requestUri:new Uri(uriString: $"{_httpClient.BaseAddress}/Advert/create"), content: new StringContent(jsonModel,Encoding.UTF8, "application/json"))
                                                       .ConfigureAwait(continueOnCapturedContext: false);
             var responseJson = await response.Content.ReadAsStringAsync().ConfigureAwait(continueOnCapturedContext: false);
             var createAdvertResponse = JsonConvert.DeserializeObject<AdvertResponse>(responseJson);
