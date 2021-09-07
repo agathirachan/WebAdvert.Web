@@ -19,7 +19,7 @@ namespace WebAdvert.Web.ServiceClient
         public SearchApiClient(HttpClient client, IConfiguration configuration)
         {
             _client = client;
-            BaseAddress = configuration.GetSection(key: "AdvertApi").GetValue<string>(key: "BaseUrl");
+            BaseAddress = configuration.GetSection(key: "SearchApi").GetValue<string>(key: "url");
         }
 
         public async Task<List<AdvertType>> Search(string keyword)

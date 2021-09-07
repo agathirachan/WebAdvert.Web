@@ -38,7 +38,7 @@ namespace WebAdvert.Web.ServiceClient
         public async Task<bool> Confirm(ConfimAdvertModel model)
         {
              var jsonModel = JsonConvert.SerializeObject(model);
-            var response = await _httpClient.PutAsync(requestUri:new Uri(uriString:$"{_httpClient.BaseAddress}/confirm"), content: new StringContent(jsonModel, Encoding.UTF8, "application/json"))
+            var response = await _httpClient.PostAsync(requestUri:new Uri(uriString:$"{_httpClient.BaseAddress}/Advert/confirm"), content: new StringContent(jsonModel, Encoding.UTF8, "application/json"))
                                                       .ConfigureAwait(continueOnCapturedContext: false);
             return response.StatusCode == System.Net.HttpStatusCode.OK;
         }
@@ -55,7 +55,7 @@ namespace WebAdvert.Web.ServiceClient
         }
         public async Task<List<Advertisement>> GetAllAsync()
         {
-            var apiCallResponse = await _httpClient.GetAsync(new Uri($"{_baseAddress}/all")).ConfigureAwait(false);
+            var apiCallResponse = await _httpClient.GetAsync(new Uri($"{_baseAddress}/Advert/all")).ConfigureAwait(false);
             var allAdvertModels =  apiCallResponse.Content.ReadAsStringAsync().Result;
             if(apiCallResponse.StatusCode != System.Net.HttpStatusCode.OK)
             {
@@ -68,7 +68,7 @@ namespace WebAdvert.Web.ServiceClient
 
         public async Task<Advertisement> GetAsync(string advertId)
         {
-            var apiCallResponse = await _httpClient.GetAsync(new Uri($"{_baseAddress}/{advertId}")).ConfigureAwait(false);
+            var apiCallResponse = await _httpClient.GetAsync(new Uri($"{_baseAddress}/Advert/Get/{advertId}")).ConfigureAwait(false);
             if (apiCallResponse.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 throw new Exception("Error occured");
