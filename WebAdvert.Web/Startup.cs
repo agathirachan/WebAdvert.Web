@@ -66,12 +66,13 @@ namespace WebAdvert.Web
             //HttpClient as a Dependency Injection
             //Automatically cretes HttpClient in DI no need to create it
             //Microsoft.Extensions.Http.Polly for Circuit Breaker Pattern
-            services.AddHttpClient<IAdvertApiClient, AdvertApiClient>()
-                        .AddPolicyHandler(GetRetryPolicy())
-                            .AddPolicyHandler(GetCircuitBreakerPatternPolicy());
-
-            services.AddHttpClient<ISearchApiClient, SearchApiClient>().AddPolicyHandler(GetRetryPolicy())
-                .AddPolicyHandler(GetCircuitBreakerPatternPolicy());
+            services.AddHttpClient<IAdvertApiClient, AdvertApiClient>();
+            //services.AddHttpClient<IAdvertApiClient, AdvertApiClient>()
+            //            .AddPolicyHandler(GetRetryPolicy())
+            //                .AddPolicyHandler(GetCircuitBreakerPatternPolicy());
+            services.AddHttpClient<ISearchApiClient, SearchApiClient>();
+            //services.AddHttpClient<ISearchApiClient, SearchApiClient>().AddPolicyHandler(GetRetryPolicy())
+            //    .AddPolicyHandler(GetCircuitBreakerPatternPolicy());
 
             services.AddControllersWithViews();
             // For Linux Hosting
